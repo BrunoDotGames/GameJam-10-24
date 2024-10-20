@@ -18,10 +18,13 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 velocity;
     bool isGrounded;
+    private bool canPlayerMove = true;
 
     void Update()
 
     {
+        if (!canPlayerMove) return;
+        // This should be in InputHandler.cs
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded && velocity.y < 0)
@@ -46,5 +49,10 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
         speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+    }
+
+    public void SetCanPlayerMove(bool value)
+    {
+        canPlayerMove = value;
     }
 }
