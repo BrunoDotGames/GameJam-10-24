@@ -23,7 +23,7 @@ namespace BDG
         public float raySphereRadius;
         public LayerMask interactableLayer;
         private bool canInteract = false;
-        public Action<bool> CanInteract;
+        public Action<bool, Item> CanInteract;
 
         #region Private
 
@@ -55,26 +55,20 @@ namespace BDG
             Ray _ray = new Ray(m_cam.transform.position, m_cam.transform.forward);
             RaycastHit _hitInfo;
 
-            Debug.Log($"Ray Origin: {_ray.origin}, Ray Direction: {_ray.direction}");
+            //Debug.Log($"Ray Origin: {_ray.origin}, Ray Direction: {_ray.direction}");
 
             bool _hitSomething = Physics.SphereCast(_ray, raySphereRadius, out _hitInfo, rayDistance,
             interactableLayer);
 
             if (_hitSomething)
             {
-                InteractableBase _interactable = _hitInfo.transform.GetComponent<InteractableBase>();
-                Debug.Log($"Interactable is not null : {_interactable != null}");
-                Debug.Log($"Hit: {_hitInfo.transform.name}");
-                uIPanel.SetTooltip(_hitInfo.transform.name);
-                if(LayerMask.LayerToName(_hitInfo.transform.gameObject.layer) == "Interactable")
+                Item _interactable = _hitInfo.transform.GetComponent<Item>();
+                uIPanel.SetTooltip(_interactable.data.ItemName);
+                if(LayerMask.LayerToName(_hitInfo.transform.gameObject.layer) == "Interactable" && _interactable != null)
                 {
                     canInteract = true;
-                    CanInteract?.Invoke(canInteract);
-                }
-                else
-                {
-                    canInteract = false;
-                    CanInteract?.Invoke(canInteract);
+                    CanInteract?.Invoke(canInteract,_interactable);
+                    
                 }
                 if (_interactable != null)
                 {
