@@ -11,6 +11,7 @@ public class EnemyAI : MonoBehaviour, IDisposable
     public LayerMask Ground, PlayerLayer;
 
     public float health;
+    public float damage;
 
     //Patroling
     public Vector3 walkPoint;
@@ -25,9 +26,10 @@ public class EnemyAI : MonoBehaviour, IDisposable
     //States
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
+    private bool playerDebuff;
 
     // Event
-    public Action<bool> damageHandler;
+    public Action<bool,float> damageHandler;
 
     private void Awake()
     {
@@ -42,6 +44,7 @@ public class EnemyAI : MonoBehaviour, IDisposable
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, PlayerLayer);
 
         if (!playerInSightRange && !playerInAttackRange) Patroling();
+        if (playerDebuff) return;
         if (playerInSightRange && !playerInAttackRange) ChasePlayer();
         if (playerInAttackRange && playerInSightRange) AttackPlayer();
     }
@@ -90,14 +93,20 @@ public class EnemyAI : MonoBehaviour, IDisposable
             ///End of attack code
 
             alreadyAttacked = true;
-            damageHandler.Invoke(true);
+            damageHandler.Invoke(true, damage);
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
     }
+
     private void ResetAttack()
     {
         alreadyAttacked = false;
-        damageHandler.Invoke(true);
+        damageHandler.Invoke(false, 0f);
+    }
+
+    public void IgnorePlayer(bool value)
+    {
+        playerDebuff = value;
     }
 
     public void TakeDamage(int damage)

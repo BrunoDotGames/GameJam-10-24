@@ -1,6 +1,7 @@
 using BDG;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,18 +9,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private EnemyAI enemyAI;
     [SerializeField] private float damageInterval = 1f;
     [SerializeField] private float totalDamageDuration = 5f;
+    [SerializeField] private float doTDamage = 0.1f;
+    [SerializeField] private Slider necklessSlider;
 
     public Action<InventoryItemData> inventoryHandler;
-    public Action<bool> DamageHandlerPlayer;
+    public Action<bool, float> DamageHandlerPlayer;
 
+    public float sliderSpeedValue = 0.05f;
     private ItemType itemType;
-    private bool isAttacking = false;
-    private bool isStillHaveDebuff = false;
+    private bool isDamageOverTimeActive = false;
     public bool isDead = false;
 
     private float damageTimer = 0f;
-    private float damageDurationTimer = 0f; 
-    private bool isDamageOverTimeActive = false;
+    private float damageDurationTimer = 0f;
 
     private void Awake()
     {
@@ -30,14 +32,14 @@ public class GameManager : MonoBehaviour
 
     private void OnNecklessDebuffHandler(ItemType type, bool value)
     {
-        Debug.Log($"Is Player Take DoT : {value}");
         isDamageOverTimeActive = value;
-        if (value) 
+        if (value)
         {
             StartDamageOverTime();
+            enemyAI.IgnorePlayer(true);
             itemType = type;
         }
-        else 
+        else
         {
             StopDamageOverTime();
         }
@@ -50,41 +52,41 @@ public class GameManager : MonoBehaviour
             damageTimer += Time.deltaTime;
             damageDurationTimer += Time.deltaTime;
 
-            if (damageTimer >= damageInterval)
+            necklessSlider.value += sliderSpeedValue * Time.deltaTime;
+
+            if (necklessSlider.value >= 1)
             {
                 ApplyDamage();
-                damageTimer = 0f; 
-            }
-
-            if (damageDurationTimer >= totalDamageDuration)
-            {
-                StopDamageOverTime();
+                necklessSlider.value = 0; 
             }
         }
     }
 
     private void ApplyDamage()
     {
-        DamageHandlerPlayer.Invoke(true); 
+        DamageHandlerPlayer.Invoke(true, doTDamage);
     }
 
     private void StartDamageOverTime()
     {
-        damageDurationTimer = 0f; 
+        damageDurationTimer = 0f;
+        necklessSlider.value = 0; 
     }
 
     private void StopDamageOverTime()
     {
         isDamageOverTimeActive = false;
         damageTimer = 0f;
-        damageDurationTimer = 0f; 
+        damageDurationTimer = 0f;
         itemType = ItemType.None;
-        DamageHandlerPlayer.Invoke(false);
+        enemyAI.IgnorePlayer(false);
+        DamageHandlerPlayer.Invoke(false, 0);
     }
 
-    private void OnDamageHandler(bool value)
+    private void OnDamageHandler(bool value, float damage)
     {
-        DamageHandlerPlayer.Invoke(value);
+        necklessSlider.value = 0;
+        DamageHandlerPlayer.Invoke(value, damage);
     }
 
     private void OnInventoryItemData(InventoryItemData data)

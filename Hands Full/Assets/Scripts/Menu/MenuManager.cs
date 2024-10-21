@@ -5,8 +5,10 @@ public class MenuManager : MonoBehaviour
 {
     [SerializeField] private InventoryController inventoryController;
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private Image[] images;
+    [SerializeField] private SpriteRenderer[] images;
     [SerializeField] private Slider healthSlider;
+
+    
 
     private void Awake()
     {
@@ -23,11 +25,11 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    private void OnDamageHandler(bool value)
+    private void OnDamageHandler(bool value, float damage)
     {
         if (value)
         {
-            healthSlider.value -= 0.1f;
+            healthSlider.value -= damage;
         }
     }
 
@@ -49,7 +51,7 @@ public class MenuManager : MonoBehaviour
         inventoryController.Get(data);
         foreach (var item in images) 
         {
-            if (item.sprite == null)
+            if (item == null)
             {
                 item.sprite = data.sprite;
                 break;

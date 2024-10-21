@@ -43,13 +43,22 @@ namespace BDG
             //interactionInputData.InteractedClicked = Input.GetKeyDown(KeyCode.E);
             //interactionInputData.InteractedRelease = Input.GetKeyUp(KeyCode.E);
 
-            if(Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                if(item != null)
+                if (item != null)
                 {
                     inventorySystem.Add(item.data);
-                    InventoryItemData.Invoke(item.data);
-                    item?.OnPickupItem();
+
+                    if (item.data != null)
+                    {
+                        InventoryItemData.Invoke(item.data);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Item data is null.");
+                    }
+
+                    item.OnPickupItem();
                 }
             }
 
@@ -76,7 +85,7 @@ namespace BDG
 
         public void Dispose()
         {
-            InventoryItemData = null;
+            ///InventoryItemData = null;
         }
     }
 }
