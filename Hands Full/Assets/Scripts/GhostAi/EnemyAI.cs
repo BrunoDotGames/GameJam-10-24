@@ -10,6 +10,8 @@ public class EnemyAI : MonoBehaviour, IDisposable
 
     public LayerMask Ground, PlayerLayer;
 
+    public EnemyType enemyType;
+
     public float health;
     public float damage;
 
@@ -43,7 +45,11 @@ public class EnemyAI : MonoBehaviour, IDisposable
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, PlayerLayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, PlayerLayer);
 
-        if (playerDebuff) return;
+        if (playerDebuff)
+        {
+            playerInSightRange = false;
+            playerInAttackRange = false;
+        };
         if (!playerInSightRange && !playerInAttackRange) Patroling();
         if (playerInSightRange && !playerInAttackRange) ChasePlayer();
         if (playerInAttackRange && playerInSightRange) AttackPlayer();
@@ -104,7 +110,7 @@ public class EnemyAI : MonoBehaviour, IDisposable
         damageHandler.Invoke(false, 0f);
     }
 
-    public void IgnorePlayer(bool value)
+    public void IgnorePlayer(bool value, ItemType itemType = ItemType.None )
     {
         playerDebuff = value;
     }

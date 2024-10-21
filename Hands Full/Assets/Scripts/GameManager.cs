@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
             }
             earringSlider.value += sliderSpeedValue * Time.deltaTime;
             DecreasePlayerSound();
-            enemyAI.IgnorePlayer(true);
+            enemyAI.IgnorePlayer(true, ItemType.Earings);
             if (earringSlider.value >= 1)
             {
                 audioSource.volume = 0;
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
         {
             damageTimer += Time.deltaTime;
             damageDurationTimer += Time.deltaTime;
-            enemyAI.IgnorePlayer(true);
+            enemyAI.IgnorePlayer(true, ItemType.Necklace);
             necklessSlider.value += sliderSpeedValue * Time.deltaTime;
 
             if (damageTimer >= damageInterval)
@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log($"There's no postProcessVolume / depthOfField attached.");
                 return;
             }
-            enemyAI.IgnorePlayer(true);
+            enemyAI.IgnorePlayer(true, ItemType.Ring);
             ringSlider.value += sliderSpeedValue * Time.deltaTime;
             IncreaseBlurEffect();
             if (ringSlider.value >= 1)
