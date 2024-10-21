@@ -63,30 +63,14 @@ namespace BDG
             if (_hitSomething)
             {
                 Item _interactable = _hitInfo.transform.GetComponent<Item>();
-                uIPanel.SetTooltip(_interactable.data.ItemName);
                 if(LayerMask.LayerToName(_hitInfo.transform.gameObject.layer) == "Interactable" && _interactable != null)
                 {
+                    uIPanel.SetTooltip(_interactable.data.ItemName);
                     canInteract = true;
+                    // This can be a problem for us, since we invoke at the update. We should invoke at the end of the frame.
+                    // But this work. so dont change it for now.
                     CanInteract?.Invoke(canInteract,_interactable);
                     
-                }
-                if (_interactable != null)
-                {
-                    // DEBT - Not sure if we really need this. so i wont remove it for now.
-                    //if (interactionData.IsEmpty())
-                    //{
-                    //    interactionData.Interactable = _interactable;
-                    //    uIPanel.SetTooltip(_interactable.TooltipMessage);
-                    //}
-                    //else
-                    //{
-                    //    Debug.Log($"IsNotSameInteractable : {!interactionData.IsSameInteractable(_interactable)}");
-                    //    if (!interactionData.IsSameInteractable(_interactable)) 
-                    //    { 
-                    //        interactionData.Interactable = _interactable;
-                    //        uIPanel.SetTooltip(_interactable.TooltipMessage);
-                    //    }
-                    //}
                 }
             }
             else
