@@ -1,6 +1,5 @@
 using BDG;
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -19,7 +18,7 @@ public class GameManager : MonoBehaviour
     public bool isDead = false;
 
     private float damageTimer = 0f;
-    private float damageDurationTimer = 0f; // Timer to track total duration
+    private float damageDurationTimer = 0f; 
     private bool isDamageOverTimeActive = false;
 
     private void Awake()
@@ -33,12 +32,12 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log($"Is Player Take DoT : {value}");
         isDamageOverTimeActive = value;
-        if (value) // Only start DoT if the debuff is active
+        if (value) 
         {
             StartDamageOverTime();
             itemType = type;
         }
-        else // If debuff is removed, stop DoT
+        else 
         {
             StopDamageOverTime();
         }
@@ -54,10 +53,9 @@ public class GameManager : MonoBehaviour
             if (damageTimer >= damageInterval)
             {
                 ApplyDamage();
-                damageTimer = 0f; // Reset the damage timer
+                damageTimer = 0f; 
             }
 
-            // Check if the duration has elapsed
             if (damageDurationTimer >= totalDamageDuration)
             {
                 StopDamageOverTime();
@@ -67,21 +65,21 @@ public class GameManager : MonoBehaviour
 
     private void ApplyDamage()
     {
-        DamageHandlerPlayer.Invoke(true); // Apply damage to the player
+        DamageHandlerPlayer.Invoke(true); 
     }
 
     private void StartDamageOverTime()
     {
-        damageDurationTimer = 0f; // Reset duration timer when the debuff is activated
+        damageDurationTimer = 0f; 
     }
 
     private void StopDamageOverTime()
     {
         isDamageOverTimeActive = false;
         damageTimer = 0f;
-        damageDurationTimer = 0f; // Reset duration timer
+        damageDurationTimer = 0f; 
         itemType = ItemType.None;
-        DamageHandlerPlayer.Invoke(false); // Notify that the debuff is no longer active
+        DamageHandlerPlayer.Invoke(false);
     }
 
     private void OnDamageHandler(bool value)
