@@ -30,6 +30,7 @@ public class EnemyAI : MonoBehaviour, IDisposable
     public bool playerInSightRange, playerInAttackRange;
     private bool playerDebuff;
 
+
     // Event
     public Action<bool,float> damageHandler;
 
@@ -112,7 +113,12 @@ public class EnemyAI : MonoBehaviour, IDisposable
 
     public void IgnorePlayer(bool value, ItemType itemType = ItemType.None )
     {
-        playerDebuff = value;
+        if(enemyType == EnemyType.RedGhost && itemType == ItemType.Necklace || enemyType == EnemyType.PurpleGhost  && itemType == ItemType.Earings
+            || enemyType == EnemyType.WhiteGhost && itemType == ItemType.Ring)
+        {
+            playerDebuff = true;
+        }
+        playerDebuff = false;
     }
 
     public void TakeDamage(int damage)
