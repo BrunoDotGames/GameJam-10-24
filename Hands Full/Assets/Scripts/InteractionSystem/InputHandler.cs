@@ -13,10 +13,9 @@ namespace BDG
 
         public InteractionInputData interactionInputData;
         public Action<InventoryItemData> InventoryItemData;
-        public Action<ItemType, bool> NecklessDebuffHandler;
 
         public bool haveDebuff = false;
-
+        public ItemType itemType;
 
         private bool canInteract = false;
         private bool canMove = false;
@@ -36,6 +35,26 @@ namespace BDG
             if (canInteract) 
             {
                 GetInteractionInputData();
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log($"ENTER DOOR");
+            Debug.Log($"Name : {other.transform.name}");
+            var door = other.GetComponent<DoorInteraction>();
+            if (door.doorData != null)
+            {
+                // Check is door locked
+                if (door.doorData.IsLock)
+                {
+                    // Get key from inventory
+                    if(inventorySystem.GetByItemId(ItemType.RedKey) != 0)
+                    {
+                        // Open the door
+                        door.OpenDoor();
+                    }   
+                }
             }
         }
 
@@ -65,14 +84,39 @@ namespace BDG
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 Debug.Log("Pressed 1");
-                if (Int32.Parse(inventorySystem.Get(item.data).data.ItemId) == (int)ItemType.Necklace) 
+                Debug.Log($"Item Get From Inventory : {Int32.Parse(inventorySystem.Get(item.data).data.ItemId)}");
+                Debug.Log($"Item Get From Inventory System : {inventorySystem.Get(item.data).data.ItemId}");
+                Debug.Log($"Is Same With Value : {Int32.Parse(inventorySystem.Get(item.data).data.ItemId) == (int)ItemType.Necklace}");
+                if (inventorySystem.GetByItemId(ItemType.Necklace) == (int)ItemType.Necklace) 
                 {
                     // disable player movement
                     Debug.Log($"Can Player Move : {canMove}");
                     playerMovement.SetCanPlayerMove(canMove);
                     canMove = !canMove;
                     haveDebuff = !haveDebuff;
-                    NecklessDebuffHandler.Invoke(ItemType.Necklace, haveDebuff);
+                    itemType = haveDebuff ? ItemType.Necklace : ItemType.None;
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                if (inventorySystem.GetByItemId(ItemType.Earings) == (int)ItemType.Earings)
+                {
+                    // disable player movement
+                    Debug.Log($"JEWELS EARRINGS");
+                    haveDebuff = !haveDebuff;
+                    itemType = haveDebuff ?  ItemType.Earings : ItemType.None;
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                if (inventorySystem.GetByItemId(ItemType.Ring) == (int)ItemType.Ring)
+                {
+                    // disable player movement
+                    Debug.Log($"JEWELS RINGS");
+                    haveDebuff = !haveDebuff;
+                    itemType = haveDebuff ? ItemType.Ring : ItemType.None;
                 }
             }
         }
@@ -83,9 +127,16 @@ namespace BDG
             item = inventoryItem;
         }
 
+        public (ItemType, bool) Debuff()
+        {
+            Debug.Log($"Debuff item type : {itemType}");
+            Debug.Log($"Debuff haveDebuff : {haveDebuff  }");
+            return (itemType, haveDebuff);
+        }
+
         public void Dispose()
         {
-            ///InventoryItemData = null;
+            InventoryItemData = null;
         }
     }
 }
