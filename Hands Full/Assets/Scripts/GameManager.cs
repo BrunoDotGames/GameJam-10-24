@@ -70,14 +70,11 @@ public class GameManager : MonoBehaviour
             isDamageOverTimeActive = false;
             damageTimer = 0f;
             damageDurationTimer = 0f;
-            necklessSlider.value = 0;
-            earringSlider.value = 0;
             enemyAI.IgnorePlayer(false);
             DamageHandlerPlayer.Invoke(false, 0);
             depthOfField.aperture.value = 9.9f;
             depthOfField.focusDistance.value = 10f;
             depthOfField.focalLength.value = 1;
-
         }
 
         if (inputHandler.Debuff().Item1 == ItemType.Earings)
