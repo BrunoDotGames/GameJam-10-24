@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
-public class EnemyAI : MonoBehaviour, IDisposable
+public class EnemyAI : MonoBehaviour
 {
     public NavMeshAgent agent;
 
@@ -30,19 +30,16 @@ public class EnemyAI : MonoBehaviour, IDisposable
     public bool playerInSightRange, playerInAttackRange;
     private bool playerDebuff;
 
-
-    // Event
-    public Action<bool,float> damageHandler;
-
     private void Awake()
     {
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
+        Debug.Log($"Enemy Type on Awake: {enemyType}");
     }
 
     private void Update()
     {
-        //Check for sight and attack range
+        //Check for sight and attack range\
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, PlayerLayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, PlayerLayer);
 
@@ -100,7 +97,10 @@ public class EnemyAI : MonoBehaviour, IDisposable
             ///End of attack code
 
             alreadyAttacked = true;
-            damageHandler.Invoke(true, damage);
+            //damageHandler.Invoke(true, damage);
+            // We shouldnt do this here, This will be only as temporary solution. 
+            // need to rush. 
+            player.GetComponent<PlayerMovement>().TakeDamage(damage);
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
     }
@@ -108,17 +108,14 @@ public class EnemyAI : MonoBehaviour, IDisposable
     private void ResetAttack()
     {
         alreadyAttacked = false;
-        damageHandler.Invoke(false, 0f);
     }
 
     public void IgnorePlayer(bool value, ItemType itemType = ItemType.None )
     {
-        if(enemyType == EnemyType.RedGhost && itemType == ItemType.Necklace || enemyType == EnemyType.PurpleGhost  && itemType == ItemType.Earings
-            || enemyType == EnemyType.WhiteGhost && itemType == ItemType.Ring)
-        {
-            playerDebuff = true;
-        }
-        playerDebuff = false;
+        Debug.Log($"Ignore Player");
+        Debug.Log($"Ignore Player Value : {value}");
+        Debug.Log($"Ignore Player ItemType : {itemType}");
+        playerDebuff = value;
     }
 
     public void TakeDamage(int damage)
@@ -139,10 +136,5 @@ public class EnemyAI : MonoBehaviour, IDisposable
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
-    }
-
-    public void Dispose()
-    {
-        damageHandler = null;
     }
 }

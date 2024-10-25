@@ -8,7 +8,10 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private InputHandler inputHandler;
-    [SerializeField] private EnemyAI enemyAI;
+    [SerializeField] private PlayerMovement player;
+    [SerializeField] private EnemyAI enemyAIRed;
+    [SerializeField] private EnemyAI enemyAIPurple;
+    [SerializeField] private EnemyAI enemyAIWhite;
     [SerializeField] private float damageInterval = 1f;
     [SerializeField] private float totalDamageDuration = 5f;
     [SerializeField] private float doTDamage = 0.1f;
@@ -35,24 +38,10 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         inputHandler.InventoryItemData += OnInventoryItemData;
-        enemyAI.damageHandler += OnDamageHandler;
+        player.damageHandler += OnDamageHandler;
         postProcessVolume.profile.TryGetSettings(out depthOfField);
     }
 
-    private void OnNecklessDebuffHandler(ItemType type, bool value)
-    {
-        isDamageOverTimeActive = value;
-        if (value)
-        {
-            StartDamageOverTime();
-            enemyAI.IgnorePlayer(true);
-            itemType = type;
-        }
-        else
-        {
-            StopDamageOverTime();
-        }
-    }
 
     private void Update()
     {
@@ -62,15 +51,15 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"ItemType : {itemType}.");
-
         if (!inputHandler.Debuff().Item2)
         {
             itemType = ItemType.None;
             isDamageOverTimeActive = false;
             damageTimer = 0f;
             damageDurationTimer = 0f;
-            enemyAI.IgnorePlayer(false);
+            enemyAIRed.IgnorePlayer(false);
+            enemyAIWhite.IgnorePlayer(false);
+            enemyAIPurple.IgnorePlayer(false);
             DamageHandlerPlayer.Invoke(false, 0);
             depthOfField.aperture.value = 9.9f;
             depthOfField.focusDistance.value = 10f;
@@ -86,7 +75,11 @@ public class GameManager : MonoBehaviour
             }
             earringSlider.value += sliderSpeedValue * Time.deltaTime;
             DecreasePlayerSound();
-            enemyAI.IgnorePlayer(true, ItemType.Earings);
+            Debug.Log($"EnemyType : {enemyAIPurple.enemyType}");
+            if (enemyAIPurple.enemyType == EnemyType.PurpleGhost)
+            {
+                enemyAIPurple.IgnorePlayer(true, ItemType.Earings);
+            }
             if (earringSlider.value >= 1)
             {
                 audioSource.volume = 0;
@@ -97,7 +90,8 @@ public class GameManager : MonoBehaviour
         {
             damageTimer += Time.deltaTime;
             damageDurationTimer += Time.deltaTime;
-            enemyAI.IgnorePlayer(true, ItemType.Necklace);
+
+            enemyAIRed.IgnorePlayer(true, ItemType.Necklace);
             necklessSlider.value += sliderSpeedValue * Time.deltaTime;
 
             if (damageTimer >= damageInterval)
@@ -120,7 +114,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log($"There's no postProcessVolume / depthOfField attached.");
                 return;
             }
-            enemyAI.IgnorePlayer(true, ItemType.Ring);
+            enemyAIWhite.IgnorePlayer(true, ItemType.Ring);
             ringSlider.value += sliderSpeedValue * Time.deltaTime;
             IncreaseBlurEffect();
             if (ringSlider.value >= 1)
@@ -165,13 +159,12 @@ public class GameManager : MonoBehaviour
         damageTimer = 0f;
         damageDurationTimer = 0f;
         itemType = ItemType.None;
-        enemyAI.IgnorePlayer(false);
+        enemyAIRed.IgnorePlayer(false);
         DamageHandlerPlayer.Invoke(false, 0);
     }
 
     private void OnDamageHandler(bool value, float damage)
     {
-        necklessSlider.value = 0;
         DamageHandlerPlayer.Invoke(value, damage);
     }
 

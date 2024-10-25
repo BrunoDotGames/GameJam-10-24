@@ -1,6 +1,5 @@
 using System;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BDG
@@ -16,6 +15,7 @@ namespace BDG
 
         public bool haveDebuff = false;
         public ItemType itemType;
+        public List<InventoryItemData> inventoryItemDatas = new List<InventoryItemData>();
 
         private bool canInteract = false;
         private bool canMove = false;
@@ -32,7 +32,7 @@ namespace BDG
         }
         void Update()
         {
-            if (canInteract) 
+            if (canInteract)
             {
                 GetInteractionInputData();
             }
@@ -40,8 +40,6 @@ namespace BDG
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"ENTER DOOR");
-            Debug.Log($"Name : {other.transform.name}");
             var door = other.GetComponent<DoorInteraction>();
             if (door.doorData != null)
             {
@@ -49,19 +47,17 @@ namespace BDG
                 if (door.doorData.IsLock)
                 {
                     // Get key from inventory
-                    if(inventorySystem.GetByItemId(ItemType.RedKey) != 0)
+                    if (inventorySystem.GetByItemId(ItemType.RedKey) != 0)
                     {
                         // Open the door
                         door.OpenDoor();
-                    }   
+                    }
                 }
             }
         }
 
-        void GetInteractionInputData()        {
-            //interactionInputData.InteractedClicked = Input.GetKeyDown(KeyCode.E);
-            //interactionInputData.InteractedRelease = Input.GetKeyUp(KeyCode.E);
-
+        void GetInteractionInputData()
+        {
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (item != null)
@@ -76,21 +72,17 @@ namespace BDG
                     {
                         Debug.LogWarning("Item data is null.");
                     }
-
+                    
+                    item.EnemySpawn((ItemType)Int32.Parse(item.data.ItemId));
                     item.OnPickupItem();
                 }
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                Debug.Log("Pressed 1");
-                Debug.Log($"Item Get From Inventory : {Int32.Parse(inventorySystem.Get(item.data).data.ItemId)}");
-                Debug.Log($"Item Get From Inventory System : {inventorySystem.Get(item.data).data.ItemId}");
-                Debug.Log($"Is Same With Value : {Int32.Parse(inventorySystem.Get(item.data).data.ItemId) == (int)ItemType.Necklace}");
-                if (inventorySystem.GetByItemId(ItemType.Necklace) == (int)ItemType.Necklace) 
+                if (inventorySystem.GetByItemId(ItemType.Necklace) == (int)ItemType.Necklace)
                 {
                     // disable player movement
-                    Debug.Log($"Can Player Move : {canMove}");
                     playerMovement.SetCanPlayerMove(canMove);
                     canMove = !canMove;
                     haveDebuff = !haveDebuff;
@@ -103,9 +95,8 @@ namespace BDG
                 if (inventorySystem.GetByItemId(ItemType.Earings) == (int)ItemType.Earings)
                 {
                     // disable player movement
-                    Debug.Log($"JEWELS EARRINGS");
                     haveDebuff = !haveDebuff;
-                    itemType = haveDebuff ?  ItemType.Earings : ItemType.None;
+                    itemType = haveDebuff ? ItemType.Earings : ItemType.None;
                 }
             }
 
@@ -114,7 +105,6 @@ namespace BDG
                 if (inventorySystem.GetByItemId(ItemType.Ring) == (int)ItemType.Ring)
                 {
                     // disable player movement
-                    Debug.Log($"JEWELS RINGS");
                     haveDebuff = !haveDebuff;
                     itemType = haveDebuff ? ItemType.Ring : ItemType.None;
                 }
@@ -125,12 +115,11 @@ namespace BDG
         {
             canInteract = value;
             item = inventoryItem;
+
         }
 
         public (ItemType, bool) Debuff()
         {
-            Debug.Log($"Debuff item type : {itemType}");
-            Debug.Log($"Debuff haveDebuff : {haveDebuff  }");
             return (itemType, haveDebuff);
         }
 

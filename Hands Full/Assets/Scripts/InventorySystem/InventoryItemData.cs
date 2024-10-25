@@ -6,5 +6,7 @@ public class InventoryItemData : ScriptableObject
     public string ItemId;
     public string ItemName;
     public string Description;
-    public Sprite sprite; 
+    public Sprite sprite;
+    public GameObject enemySpawner;
+    public Vector3 spawnLocation;
 }

@@ -16,3 +16,5 @@ MonoBehaviour:
   ItemName: White Key
   Description: Unlock White Door
   sprite: {fileID: 21300000, guid: 540c67b5af8c540498f39d1a1788c228, type: 3}
+  enemySpawner: {fileID: 2527598016046251714, guid: f1172d3404f8b444a92970bf852aab3c, type: 3}
+  spawnLocation: {x: 0, y: 0, z: 0}
