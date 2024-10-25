@@ -34,7 +34,6 @@ public class EnemyAI : MonoBehaviour
     {
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
-        Debug.Log($"Enemy Type on Awake: {enemyType}");
     }
 
     private void Update()
@@ -112,9 +111,6 @@ public class EnemyAI : MonoBehaviour
 
     public void IgnorePlayer(bool value, ItemType itemType = ItemType.None )
     {
-        Debug.Log($"Ignore Player");
-        Debug.Log($"Ignore Player Value : {value}");
-        Debug.Log($"Ignore Player ItemType : {itemType}");
         playerDebuff = value;
     }
 

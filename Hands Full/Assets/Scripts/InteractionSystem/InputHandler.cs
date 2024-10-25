@@ -13,9 +13,9 @@ namespace BDG
         public InteractionInputData interactionInputData;
         public Action<InventoryItemData> InventoryItemData;
 
-        public bool haveDebuff = false;
         public ItemType itemType;
         public List<InventoryItemData> inventoryItemDatas = new List<InventoryItemData>();
+        public List<ItemType> itemTypes = new List<ItemType>();
 
         private bool canInteract = false;
         private bool canMove = false;
@@ -82,11 +82,15 @@ namespace BDG
             {
                 if (inventorySystem.GetByItemId(ItemType.Necklace) == (int)ItemType.Necklace)
                 {
-                    // disable player movement
                     playerMovement.SetCanPlayerMove(canMove);
                     canMove = !canMove;
-                    haveDebuff = !haveDebuff;
-                    itemType = haveDebuff ? ItemType.Necklace : ItemType.None;
+                    itemType = ItemType.Necklace;
+                    if (itemTypes.Contains(ItemType.Necklace))
+                    {
+                        itemTypes.Remove(ItemType.Necklace);
+                        return;
+                    }
+                    itemTypes.Add(itemType);
                 }
             }
 
@@ -94,9 +98,13 @@ namespace BDG
             {
                 if (inventorySystem.GetByItemId(ItemType.Earings) == (int)ItemType.Earings)
                 {
-                    // disable player movement
-                    haveDebuff = !haveDebuff;
-                    itemType = haveDebuff ? ItemType.Earings : ItemType.None;
+                    itemType = ItemType.Earings;
+                    if (itemTypes.Contains(itemType)) 
+                    {
+                        itemTypes.Remove(ItemType.Earings);
+                        return;
+                    }
+                    itemTypes.Add(itemType);
                 }
             }
 
@@ -104,9 +112,13 @@ namespace BDG
             {
                 if (inventorySystem.GetByItemId(ItemType.Ring) == (int)ItemType.Ring)
                 {
-                    // disable player movement
-                    haveDebuff = !haveDebuff;
-                    itemType = haveDebuff ? ItemType.Ring : ItemType.None;
+                    if(itemTypes.Contains(ItemType.Ring))
+                    {
+                        itemTypes.Remove(ItemType.Ring);
+                        return;
+                    }
+                    itemType = ItemType.Ring;
+                    itemTypes.Add(itemType);
                 }
             }
         }
@@ -116,11 +128,6 @@ namespace BDG
             canInteract = value;
             item = inventoryItem;
 
-        }
-
-        public (ItemType, bool) Debuff()
-        {
-            return (itemType, haveDebuff);
         }
 
         public void Dispose()

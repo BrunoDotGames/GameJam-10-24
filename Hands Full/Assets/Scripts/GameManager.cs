@@ -45,30 +45,15 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(inputHandler is null)
+        if (inputHandler is null)
         {
             Debug.Log($"There's no input handler attached.");
             return;
         }
 
-        if (!inputHandler.Debuff().Item2)
+        if (inputHandler.itemTypes.Contains(ItemType.Earings))
         {
-            itemType = ItemType.None;
-            isDamageOverTimeActive = false;
-            damageTimer = 0f;
-            damageDurationTimer = 0f;
-            enemyAIRed.IgnorePlayer(false);
-            enemyAIWhite.IgnorePlayer(false);
-            enemyAIPurple.IgnorePlayer(false);
-            DamageHandlerPlayer.Invoke(false, 0);
-            depthOfField.aperture.value = 9.9f;
-            depthOfField.focusDistance.value = 10f;
-            depthOfField.focalLength.value = 1;
-        }
-
-        if (inputHandler.Debuff().Item1 == ItemType.Earings)
-        {
-            if(audioSource is null)
+            if (audioSource is null)
             {
                 Debug.Log($"There's no audio attached.");
                 return;
@@ -85,8 +70,17 @@ public class GameManager : MonoBehaviour
                 audioSource.volume = 0;
             }
         }
+        else if (!inputHandler.itemTypes.Contains(ItemType.Earings))
+        {
+            if(earringSlider.value > 0)
+            {
+                earringSlider.value -= sliderSpeedValue * Time.deltaTime;
+            }
+            enemyAIPurple.IgnorePlayer(false);
+            //inputHandler.itemTypes.Remove(ItemType.Earings);
+        }
 
-        if (inputHandler.Debuff().Item1 == ItemType.Necklace)
+        if (inputHandler.itemTypes.Contains(ItemType.Necklace))
         {
             damageTimer += Time.deltaTime;
             damageDurationTimer += Time.deltaTime;
@@ -106,8 +100,21 @@ public class GameManager : MonoBehaviour
                 necklessSlider.value = 0;
             }
         }
+        else if (!inputHandler.itemTypes.Contains(ItemType.Necklace))
+        {
+            if(necklessSlider.value > 0)
+            {
+                necklessSlider.value -= sliderSpeedValue * Time.deltaTime;
+            }
+            isDamageOverTimeActive = false;
+            damageTimer = 0f;
+            damageDurationTimer = 0f;
+            enemyAIRed.IgnorePlayer(false);
+            DamageHandlerPlayer.Invoke(false, 0);
+            //inputHandler.itemTypes.Remove(ItemType.Necklace);
+        }
 
-        if (inputHandler.Debuff().Item1 == ItemType.Ring)
+        if (inputHandler.itemTypes.Contains(ItemType.Ring))
         {
             if (postProcessVolume is null || depthOfField is null)
             {
@@ -122,6 +129,18 @@ public class GameManager : MonoBehaviour
                 depthOfField.aperture.value = 32;
                 depthOfField.focalLength.value = 300;
             }
+        }
+        else if (!inputHandler.itemTypes.Contains(ItemType.Ring))
+        {
+            if(ringSlider.value > 0)
+            {
+                ringSlider.value -= sliderSpeedValue * Time.deltaTime;
+            }
+            enemyAIWhite.IgnorePlayer(false);
+            depthOfField.aperture.value = 9.9f;
+            depthOfField.focusDistance.value = 10f;
+            depthOfField.focalLength.value = 1;
+            //inputHandler.itemTypes.Remove(ItemType.Ring);
         }
     }
 
