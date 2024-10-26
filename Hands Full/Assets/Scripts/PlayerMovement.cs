@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IDisposable
 {
     public CharacterController controller;
 
@@ -19,6 +18,9 @@ public class PlayerMovement : MonoBehaviour
     Vector3 velocity;
     bool isGrounded;
     private bool canPlayerMove = true;
+
+    // Event
+    public Action<bool, float> damageHandler;
 
     void Update()
 
@@ -54,5 +56,17 @@ public class PlayerMovement : MonoBehaviour
     public void SetCanPlayerMove(bool value)
     {
         canPlayerMove = value;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        Debug.Log($"Player Take Damage");
+        Debug.Log($"Damage Taken : {damage}");
+        damageHandler?.Invoke(true, damage);    
+    }
+
+    public void Dispose()
+    {
+        damageHandler = null;
     }
 }

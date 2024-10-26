@@ -8,7 +8,10 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private InputHandler inputHandler;
-    [SerializeField] private EnemyAI enemyAI;
+    [SerializeField] private PlayerMovement player;
+    [SerializeField] private EnemyAI enemyAIRed;
+    [SerializeField] private EnemyAI enemyAIPurple;
+    [SerializeField] private EnemyAI enemyAIWhite;
     [SerializeField] private float damageInterval = 1f;
     [SerializeField] private float totalDamageDuration = 5f;
     [SerializeField] private float doTDamage = 0.1f;
@@ -35,72 +38,54 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         inputHandler.InventoryItemData += OnInventoryItemData;
-        enemyAI.damageHandler += OnDamageHandler;
+        player.damageHandler += OnDamageHandler;
         postProcessVolume.profile.TryGetSettings(out depthOfField);
     }
 
-    private void OnNecklessDebuffHandler(ItemType type, bool value)
-    {
-        isDamageOverTimeActive = value;
-        if (value)
-        {
-            StartDamageOverTime();
-            enemyAI.IgnorePlayer(true);
-            itemType = type;
-        }
-        else
-        {
-            StopDamageOverTime();
-        }
-    }
 
     private void Update()
     {
-        if(inputHandler is null)
+        if (inputHandler is null)
         {
             Debug.Log($"There's no input handler attached.");
             return;
         }
 
-        Debug.Log($"ItemType : {itemType}.");
-
-        if (!inputHandler.Debuff().Item2)
+        if (inputHandler.itemTypes.Contains(ItemType.Earings))
         {
-            itemType = ItemType.None;
-            isDamageOverTimeActive = false;
-            damageTimer = 0f;
-            damageDurationTimer = 0f;
-            necklessSlider.value = 0;
-            earringSlider.value = 0;
-            enemyAI.IgnorePlayer(false);
-            DamageHandlerPlayer.Invoke(false, 0);
-            depthOfField.aperture.value = 9.9f;
-            depthOfField.focusDistance.value = 10f;
-            depthOfField.focalLength.value = 1;
-
-        }
-
-        if (inputHandler.Debuff().Item1 == ItemType.Earings)
-        {
-            if(audioSource is null)
+            if (audioSource is null)
             {
                 Debug.Log($"There's no audio attached.");
                 return;
             }
             earringSlider.value += sliderSpeedValue * Time.deltaTime;
             DecreasePlayerSound();
-            enemyAI.IgnorePlayer(true, ItemType.Earings);
+            Debug.Log($"EnemyType : {enemyAIPurple.enemyType}");
+            if (enemyAIPurple.enemyType == EnemyType.PurpleGhost)
+            {
+                enemyAIPurple.IgnorePlayer(true, ItemType.Earings);
+            }
             if (earringSlider.value >= 1)
             {
                 audioSource.volume = 0;
             }
         }
+        else if (!inputHandler.itemTypes.Contains(ItemType.Earings))
+        {
+            if(earringSlider.value > 0)
+            {
+                earringSlider.value -= sliderSpeedValue * Time.deltaTime;
+            }
+            enemyAIPurple.IgnorePlayer(false);
+            //inputHandler.itemTypes.Remove(ItemType.Earings);
+        }
 
-        if (inputHandler.Debuff().Item1 == ItemType.Necklace)
+        if (inputHandler.itemTypes.Contains(ItemType.Necklace))
         {
             damageTimer += Time.deltaTime;
             damageDurationTimer += Time.deltaTime;
-            enemyAI.IgnorePlayer(true, ItemType.Necklace);
+
+            enemyAIRed.IgnorePlayer(true, ItemType.Necklace);
             necklessSlider.value += sliderSpeedValue * Time.deltaTime;
 
             if (damageTimer >= damageInterval)
@@ -115,15 +100,28 @@ public class GameManager : MonoBehaviour
                 necklessSlider.value = 0;
             }
         }
+        else if (!inputHandler.itemTypes.Contains(ItemType.Necklace))
+        {
+            if(necklessSlider.value > 0)
+            {
+                necklessSlider.value -= sliderSpeedValue * Time.deltaTime;
+            }
+            isDamageOverTimeActive = false;
+            damageTimer = 0f;
+            damageDurationTimer = 0f;
+            enemyAIRed.IgnorePlayer(false);
+            DamageHandlerPlayer.Invoke(false, 0);
+            //inputHandler.itemTypes.Remove(ItemType.Necklace);
+        }
 
-        if (inputHandler.Debuff().Item1 == ItemType.Ring)
+        if (inputHandler.itemTypes.Contains(ItemType.Ring))
         {
             if (postProcessVolume is null || depthOfField is null)
             {
                 Debug.Log($"There's no postProcessVolume / depthOfField attached.");
                 return;
             }
-            enemyAI.IgnorePlayer(true, ItemType.Ring);
+            enemyAIWhite.IgnorePlayer(true, ItemType.Ring);
             ringSlider.value += sliderSpeedValue * Time.deltaTime;
             IncreaseBlurEffect();
             if (ringSlider.value >= 1)
@@ -131,6 +129,18 @@ public class GameManager : MonoBehaviour
                 depthOfField.aperture.value = 32;
                 depthOfField.focalLength.value = 300;
             }
+        }
+        else if (!inputHandler.itemTypes.Contains(ItemType.Ring))
+        {
+            if(ringSlider.value > 0)
+            {
+                ringSlider.value -= sliderSpeedValue * Time.deltaTime;
+            }
+            enemyAIWhite.IgnorePlayer(false);
+            depthOfField.aperture.value = 9.9f;
+            depthOfField.focusDistance.value = 10f;
+            depthOfField.focalLength.value = 1;
+            //inputHandler.itemTypes.Remove(ItemType.Ring);
         }
     }
 
@@ -168,13 +178,12 @@ public class GameManager : MonoBehaviour
         damageTimer = 0f;
         damageDurationTimer = 0f;
         itemType = ItemType.None;
-        enemyAI.IgnorePlayer(false);
+        enemyAIRed.IgnorePlayer(false);
         DamageHandlerPlayer.Invoke(false, 0);
     }
 
     private void OnDamageHandler(bool value, float damage)
     {
-        necklessSlider.value = 0;
         DamageHandlerPlayer.Invoke(value, damage);
     }
 
