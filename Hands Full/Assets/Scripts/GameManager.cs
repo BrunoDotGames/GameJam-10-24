@@ -15,10 +15,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float damageInterval = 1f;
     [SerializeField] private float totalDamageDuration = 5f;
     [SerializeField] private float doTDamage = 0.1f;
+    [SerializeField] private Slider healthSlider;
     [SerializeField] private Slider necklessSlider;
     [SerializeField] private Slider earringSlider;
     [SerializeField] private Slider ringSlider;
     [SerializeField] private PostProcessVolume postProcessVolume;
+
+    public GameObject gameoverUI;
 
     public Action<InventoryItemData> inventoryHandler;
     public Action<bool, float> DamageHandlerPlayer;
@@ -72,12 +75,12 @@ public class GameManager : MonoBehaviour
         }
         else if (!inputHandler.itemTypes.Contains(ItemType.Earings))
         {
-            if(earringSlider.value > 0)
+            if (earringSlider.value > 0)
             {
                 earringSlider.value -= sliderSpeedValue * Time.deltaTime;
             }
             enemyAIPurple.IgnorePlayer(false);
-            //inputHandler.itemTypes.Remove(ItemType.Earings);
+            inputHandler.itemTypes.Remove(ItemType.Earings);
         }
 
         if (inputHandler.itemTypes.Contains(ItemType.Necklace))
@@ -102,7 +105,7 @@ public class GameManager : MonoBehaviour
         }
         else if (!inputHandler.itemTypes.Contains(ItemType.Necklace))
         {
-            if(necklessSlider.value > 0)
+            if (necklessSlider.value > 0)
             {
                 necklessSlider.value -= sliderSpeedValue * Time.deltaTime;
             }
@@ -111,7 +114,7 @@ public class GameManager : MonoBehaviour
             damageDurationTimer = 0f;
             enemyAIRed.IgnorePlayer(false);
             DamageHandlerPlayer.Invoke(false, 0);
-            //inputHandler.itemTypes.Remove(ItemType.Necklace);
+            inputHandler.itemTypes.Remove(ItemType.Necklace);
         }
 
         if (inputHandler.itemTypes.Contains(ItemType.Ring))
@@ -132,7 +135,7 @@ public class GameManager : MonoBehaviour
         }
         else if (!inputHandler.itemTypes.Contains(ItemType.Ring))
         {
-            if(ringSlider.value > 0)
+            if (ringSlider.value > 0)
             {
                 ringSlider.value -= sliderSpeedValue * Time.deltaTime;
             }
@@ -140,10 +143,9 @@ public class GameManager : MonoBehaviour
             depthOfField.aperture.value = 9.9f;
             depthOfField.focusDistance.value = 10f;
             depthOfField.focalLength.value = 1;
-            //inputHandler.itemTypes.Remove(ItemType.Ring);
+            inputHandler.itemTypes.Remove(ItemType.Ring);
         }
     }
-
     private void IncreaseBlurEffect()
     {
         depthOfField.aperture.value += blurSpeedValue;
@@ -192,8 +194,14 @@ public class GameManager : MonoBehaviour
         inventoryHandler.Invoke(data);
     }
 
+    public void gameOver()
+    {
+        gameoverUI.SetActive(true);
+    }
+
     public void SetPlayerDied()
     {
         isDead = true;
+
     }
 }

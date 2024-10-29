@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a585a000a3b6cdc49b541950a6e7436e, type: 3}
   m_Name: PurpleDoor
   m_EditorClassIdentifier: 
-  LockId: 0
-  IsLock: 0
-  Description: 
+  LockId: 1002
+  IsLock: 1
+  Description: Door Locked

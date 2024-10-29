@@ -47,7 +47,7 @@ namespace BDG
                 if (door.doorData.IsLock)
                 {
                     // Get key from inventory
-                    if (inventorySystem.GetByItemId(ItemType.RedKey) != 0)
+                    if (inventorySystem.GetByItemId(ItemType.RedKey)== (int)ItemType.RedKey)
                     {
                         // Open the door
                         door.OpenDoor();

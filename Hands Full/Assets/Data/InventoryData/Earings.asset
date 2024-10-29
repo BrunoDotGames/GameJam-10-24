@@ -18,5 +18,5 @@ MonoBehaviour:
     is applied: remove the game\u2019s audio while in use, if the player uses it
     for too long lower the game\u2019s audio for the rest of the game"
   sprite: {fileID: 21300000, guid: e9ed802cab0303c41b5fa19bd58cdf27, type: 3}
-  enemySpawner: {fileID: 7805496703543694921, guid: c74ddb97c507e234492fe4ad707f2277, type: 3}
-  spawnLocation: {x: 0, y: 0, z: 0}
+  enemySpawner: {fileID: 1070089255034417015, guid: cf462c0a665bc21498812dbba27f0dc8, type: 3}
+  spawnLocation: {x: 0, y: 0, z: 240}

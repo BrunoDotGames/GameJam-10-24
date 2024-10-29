@@ -18,5 +18,5 @@ MonoBehaviour:
     is applied: reduces the player's visibility, if the player uses it for too long,
     leaves the visibility effect on for the rest of the game."
   sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  enemySpawner: {fileID: 2527598016046251714, guid: f1172d3404f8b444a92970bf852aab3c, type: 3}
-  spawnLocation: {x: 0, y: 0, z: 0}
+  enemySpawner: {fileID: 5926664514810375924, guid: 8baa4609f0ce1884d9f5d329b03753ad, type: 3}
+  spawnLocation: {x: 0, y: 1.8, z: 30}
