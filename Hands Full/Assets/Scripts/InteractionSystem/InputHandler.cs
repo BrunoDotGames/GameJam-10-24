@@ -41,16 +41,24 @@ namespace BDG
         private void OnTriggerEnter(Collider other)
         {
             var door = other.GetComponent<DoorInteraction>();
+            if(door == null) return;
             if (door.doorData != null)
             {
                 // Check is door locked
                 if (door.doorData.IsLock)
                 {
                     // Get key from inventory
-                    if (inventorySystem.GetByItemId(ItemType.RedKey)== (int)ItemType.RedKey)
+                    if (inventorySystem.GetByItemId(ItemType.RedKey) == (int)ItemType.RedKey)
                     {
-                        // Open the door
-                        door.OpenDoor();
+                        door.OpenDoor((ItemType)inventorySystem.GetByItemId(ItemType.RedKey));
+                    }
+                    if(inventorySystem.GetByItemId(ItemType.WhiteKey) == (int)ItemType.WhiteKey)
+                    {
+                        door.OpenDoor((ItemType)inventorySystem.GetByItemId(ItemType.WhiteKey));
+                    }
+                    if (inventorySystem.GetByItemId(ItemType.PurpleKey) == (int)ItemType.PurpleKey)
+                    {
+                        door.OpenDoor((ItemType)inventorySystem.GetByItemId(ItemType.PurpleKey));
                     }
                 }
             }
